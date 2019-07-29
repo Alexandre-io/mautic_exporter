@@ -1,2 +1,2 @@
-# mautic_exporter
+# Mautic Exporter
 Prometheus exporter for Mautic
