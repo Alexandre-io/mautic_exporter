@@ -19,6 +19,7 @@ import (
 //This is my collector metrics
 type mauticCollector struct {
 	numLeadsMetric        *prometheus.Desc
+	numAnonymousMetric    *prometheus.Desc
 	numEmailsMetric       *prometheus.Desc
 	numCampaignsMetric    *prometheus.Desc
 	numPageHitsMetric     *prometheus.Desc
@@ -35,27 +36,31 @@ type mauticCollector struct {
 //This is a constructor for my mauticCollector struct
 func newMauticCollector(host string, dbname string, username string, pass string, tablePrefix string) *mauticCollector {
 	return &mauticCollector{
-		numLeadsMetric: prometheus.NewDesc("mautic_numLeads_metric",
+		numLeadsMetric: prometheus.NewDesc("mautic_num_leads_metric",
 			"Shows the number of leads in Mautic",
 			nil, nil,
 		),
-		numEmailsMetric: prometheus.NewDesc("mautic_numEmails_metric",
+		numAnonymousMetric: prometheus.NewDesc("mautic_num_anonymous_metric",
+			"Shows the number of anonymous in Mautic",
+			nil, nil,
+		),
+		numEmailsMetric: prometheus.NewDesc("mautic_num_emails_metric",
 			"Shows the number of emails in Mautic",
 			nil, nil,
 		),
-		numCampaignsMetric: prometheus.NewDesc("mautic_numCampaigns_metric",
+		numCampaignsMetric: prometheus.NewDesc("mautic_num_campaigns_metric",
 			"Shows the number of campaigns in Mautic",
 			nil, nil,
 		),
-		numPageHitsMetric: prometheus.NewDesc("mautic_numPageHits_metric",
+		numPageHitsMetric: prometheus.NewDesc("mautic_num_pagehits_metric",
 			"Shows the number of page hits in Mautic",
 			nil, nil,
 		),
-		numWebhookQueueMetric: prometheus.NewDesc("mautic_numWebhookQueue_metric",
+		numWebhookQueueMetric: prometheus.NewDesc("mautic_num_webhook_queue_metric",
 			"Shows the number of webhook in Mautic's queue",
 			nil, nil,
 		),
-		numMessageQueueMetric: prometheus.NewDesc("mautic_numMessageQueue_metric",
+		numMessageQueueMetric: prometheus.NewDesc("mautic_num_message_queue_metric",
 			"Shows the number of message in Mautic's queue",
 			nil, nil,
 		),
@@ -73,6 +78,7 @@ func (collector *mauticCollector) Describe(ch chan<- *prometheus.Desc) {
 
 	//We set the metrics
 	ch <- collector.numLeadsMetric
+	ch <- collector.numAnonymousMetric
 	ch <- collector.numEmailsMetric
 	ch <- collector.numCampaignsMetric
 	ch <- collector.numPageHitsMetric
@@ -94,50 +100,58 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 	defer db.Close()
 
-	//select count(*) as numLeads from leads;
+	//select count(id) as numLeads from leads where date_identified is not null
 	var numLeads float64
-	q1 := fmt.Sprintf("select count(*) as numLeads from %sleads;", collector.dbTablePrefix)
+	q1 := fmt.Sprintf("select count(id) as numLeads from %sleads where date_identified is not null;", collector.dbTablePrefix)
 	err = db.QueryRow(q1).Scan(&numLeads)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//select count(id) as numAnonymous from leads where date_identified is null
+	var numAnonymous float64
+	q2 := fmt.Sprintf("select count(id) as numAnonymous from %sleads where date_identified is null;", collector.dbTablePrefix)
+	err = db.QueryRow(q2).Scan(&numAnonymous)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//select count(*) as numEmails from emails;
 	var numEmails float64
-	q2 := fmt.Sprintf("select count(*) as numEmails from %semails;", collector.dbTablePrefix)
-	err = db.QueryRow(q2).Scan(&numEmails)
+	q3 := fmt.Sprintf("select count(*) as numEmails from %semails;", collector.dbTablePrefix)
+	err = db.QueryRow(q3).Scan(&numEmails)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//select count(*) as numCampaigns from campaigns;
 	var numCampaigns float64
-	q3 := fmt.Sprintf("select count(*) as numCampaigns from %scampaigns;", collector.dbTablePrefix)
-	err = db.QueryRow(q3).Scan(&numCampaigns)
+	q4 := fmt.Sprintf("select count(*) as numCampaigns from %scampaigns;", collector.dbTablePrefix)
+	err = db.QueryRow(q4).Scan(&numCampaigns)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//select count(*) as numPageHits from page_hits;
 	var numPageHits float64
-	q4 := fmt.Sprintf("select count(*) as numPageHits from %spage_hits;", collector.dbTablePrefix)
-	err = db.QueryRow(q4).Scan(&numPageHits)
+	q5 := fmt.Sprintf("select count(*) as numPageHits from %spage_hits;", collector.dbTablePrefix)
+	err = db.QueryRow(q5).Scan(&numPageHits)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//select count(*) as numWebhookQueue from webhook_queue;
 	var numWebhookQueue float64
-	q5 := fmt.Sprintf("select count(*) as numWebhookQueue from %swebhook_queue;", collector.dbTablePrefix)
-	err = db.QueryRow(q5).Scan(&numWebhookQueue)
+	q6 := fmt.Sprintf("select count(*) as numWebhookQueue from %swebhook_queue;", collector.dbTablePrefix)
+	err = db.QueryRow(q6).Scan(&numWebhookQueue)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	//select count(*) as numMessageQueue from message_queue;
 	var numMessageQueue float64
-	q6 := fmt.Sprintf("select count(*) as numMessageQueue from %smessage_queue;", collector.dbTablePrefix)
-	err = db.QueryRow(q6).Scan(&numMessageQueue)
+	q7 := fmt.Sprintf("select count(*) as numMessageQueue from %smessage_queue;", collector.dbTablePrefix)
+	err = db.QueryRow(q7).Scan(&numMessageQueue)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -145,6 +159,7 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	//Write latest value for each metric in the prometheus metric channel.
 	//Note that you can pass CounterValue, GaugeValue, or UntypedValue types here.
 	ch <- prometheus.MustNewConstMetric(collector.numLeadsMetric, prometheus.CounterValue, numLeads)
+	ch <- prometheus.MustNewConstMetric(collector.numAnonymousMetric, prometheus.CounterValue, numAnonymous)
 	ch <- prometheus.MustNewConstMetric(collector.numEmailsMetric, prometheus.CounterValue, numEmails)
 	ch <- prometheus.MustNewConstMetric(collector.numCampaignsMetric, prometheus.CounterValue, numCampaigns)
 	ch <- prometheus.MustNewConstMetric(collector.numPageHitsMetric, prometheus.CounterValue, numPageHits)
