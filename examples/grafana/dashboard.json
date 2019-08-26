@@ -1,4 +1,40 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "6.3.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "singlestat",
+      "name": "Singlestat",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -15,8 +51,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 11,
-  "iteration": 1564581038363,
+  "id": null,
+  "iteration": 1566818608011,
   "links": [],
   "panels": [
     {
@@ -28,7 +64,7 @@
         "rgba(237, 129, 40, 0.89)",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -42,6 +78,179 @@
         "w": 4,
         "x": 0,
         "y": 0
+      },
+      "id": 16,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "mautic_num_anonymous_metric{kubernetes_namespace=~\"$namespace\"}",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Number of anonymous",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "aliasColors": {
+        "leads": "green"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 4,
+        "w": 20,
+        "x": 4,
+        "y": 0
+      },
+      "id": 9,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "mautic_num_anonymous_metric{kubernetes_namespace=~\"$namespace\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "leads",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Number of anonymous",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "${DS_PROMETHEUS}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 4
       },
       "id": 6,
       "interval": null,
@@ -81,8 +290,9 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "mautic_numLeads_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_leads_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -107,15 +317,16 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 0
+        "y": 4
       },
-      "id": 9,
+      "id": 17,
       "legend": {
         "avg": false,
         "current": false,
@@ -129,7 +340,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -140,7 +353,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numLeads_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_leads_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "leads",
@@ -197,7 +410,7 @@
         "#5195ce",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -210,7 +423,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 4
+        "y": 8
       },
       "id": 2,
       "interval": null,
@@ -250,8 +463,9 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "mautic_numEmails_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_emails_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -276,13 +490,14 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 4
+        "y": 8
       },
       "id": 8,
       "legend": {
@@ -298,7 +513,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -309,7 +526,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numEmails_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_emails_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "emails",
@@ -366,7 +583,7 @@
         "#5195ce",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -379,7 +596,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 8
+        "y": 12
       },
       "id": 7,
       "interval": null,
@@ -419,8 +636,9 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "mautic_numCampaigns_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_campaigns_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -445,13 +663,14 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 8
+        "y": 12
       },
       "id": 4,
       "legend": {
@@ -467,7 +686,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -478,7 +699,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numCampaigns_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_campaigns_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "campaigns",
@@ -535,7 +756,7 @@
         "#5195ce",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -548,7 +769,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 10,
       "interval": null,
@@ -588,8 +809,9 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "mautic_numPageHits_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_pagehits_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -614,13 +836,14 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 12
+        "y": 16
       },
       "id": 11,
       "legend": {
@@ -636,7 +859,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -647,7 +872,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numPageHits_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_pagehits_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "page hits",
@@ -704,7 +929,7 @@
         "#5195ce",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -717,7 +942,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 12,
       "interval": null,
@@ -757,8 +982,9 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "mautic_numMessageQueue_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_webhook_queue_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -783,13 +1009,14 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 16
+        "y": 20
       },
       "id": 13,
       "legend": {
@@ -805,7 +1032,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -816,7 +1045,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numMessageQueue_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_webhook_queue_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "messages",
@@ -873,7 +1102,7 @@
         "#5195ce",
         "#d44a3a"
       ],
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -886,7 +1115,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "id": 14,
       "interval": null,
@@ -926,8 +1155,9 @@
       "tableColumn": "__name__",
       "targets": [
         {
-          "expr": "mautic_numWebhookQueue_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_message_queue_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
@@ -952,13 +1182,14 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "prometheus",
+      "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
         "h": 4,
         "w": 20,
         "x": 4,
-        "y": 20
+        "y": 24
       },
       "id": 15,
       "legend": {
@@ -974,7 +1205,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -985,7 +1218,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "mautic_numWebhookQueue_metric{kubernetes_namespace=~\"$namespace\"}",
+          "expr": "mautic_num_message_queue_metric{kubernetes_namespace=~\"$namespace\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "webhooks",
@@ -1035,14 +1268,15 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 18,
+  "schemaVersion": 19,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "allValue": null,
-        "datasource": "prometheus",
+        "current": {},
+        "datasource": "${DS_PROMETHEUS}",
         "definition": "label_values(kubernetes_namespace)",
         "hide": 0,
         "includeAll": false,
@@ -1052,7 +1286,7 @@
         "options": [],
         "query": "label_values(kubernetes_namespace)",
         "refresh": 2,
-        "regex": "",
+        "regex": "^(?!kube-.*).*$",
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
@@ -1064,7 +1298,7 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
