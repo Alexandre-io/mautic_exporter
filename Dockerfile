@@ -1,7 +1,10 @@
-FROM golang:1.12.7-buster
+FROM golang:1.14.7-alpine3.12
+
+# Install bash
+RUN apk add --no-cache bash
 
 # Set the Current Working Directory inside the container
-WORKDIR $GOPATH/src/mautic_exporter
+WORKDIR /go/src/app
 
 # Copy sources.
 COPY . .
@@ -19,7 +22,7 @@ ENV MAUTIC_DB_HOST="" \
     MAUTIC_DB_NAME="" \
     MAUTIC_TABLE_PREFIX=""
 
-EXPOSE 9117
+EXPOSE 9851
 
 ADD /docker-entrypoint.sh /docker-entrypoint.sh
 
