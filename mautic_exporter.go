@@ -187,8 +187,8 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	queryNumSegmentsMetric := fmt.Sprintf("select count(*) as numSegments from %slead_lists;", collector.dbTablePrefix)
 	mtQueryGauge(db, ch, collector.numSegmentsMetric, queryNumSegmentsMetric)
 
-	//select count(*) as numPageHits from page_hits;
-	queryNumPageHitsMetric := fmt.Sprintf("select count(*) as numPageHits from %spage_hits;", collector.dbTablePrefix)
+	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "page_hits";
+	queryNumPageHitsMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %spage_hits;", collector.dbName, collector.dbTablePrefix)
 	mtQueryCounter(db, ch, collector.numPageHitsMetric, queryNumPageHitsMetric)
 
 	//select count(*) as numWebhookQueue from webhook_queue;
@@ -205,14 +205,14 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 
 	//select count(*) from campaign_lead_event_failed_log;
 	queryNumLeadEventFailedMetric := fmt.Sprintf("select count(*) from %scampaign_lead_event_failed_log;", collector.dbTablePrefix)
-	mtQueryCounter(db, ch, collector.numLeadEventFailedMetric, queryNumLeadEventFailedMetric)
+	mtQueryGauge(db, ch, collector.numLeadEventFailedMetric, queryNumLeadEventFailedMetric)
 
 	//select count(*) from notifications;
 	queryNumNotificationsMetric := fmt.Sprintf("select count(*) from %snotifications;", collector.dbTablePrefix)
 	mtQueryGauge(db, ch, collector.numNotificationsMetric, queryNumNotificationsMetric)
 
-	//select count(*) from page_redirects;
-	queryNumPageRedirectMetric := fmt.Sprintf("select count(*) from %spage_redirects;", collector.dbTablePrefix)
+	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "page_redirects";
+	queryNumPageRedirectMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %spage_redirects;", collector.dbName, collector.dbTablePrefix)
 	mtQueryCounter(db, ch, collector.numPageRedirectMetric, queryNumPageRedirectMetric)
 
 	//select campaign_id as label, count(*) as value from campaign_leads where manually_removed = 0  group by campaign_id;
