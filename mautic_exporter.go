@@ -22,6 +22,7 @@ const (
 
 //This is my collector metrics
 type mauticCollector struct {
+	numEmailsSentMetric      *prometheus.Desc
 	numLeadsMetric           *prometheus.Desc
 	numAnonymousMetric       *prometheus.Desc
 	numEmailsMetric          *prometheus.Desc
@@ -47,6 +48,10 @@ type mauticCollector struct {
 //This is a constructor for my mauticCollector struct
 func newMauticCollector(host string, dbname string, username string, pass string, tablePrefix string) *mauticCollector {
 	return &mauticCollector{
+		numEmailsSentMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "emails_sent_total"),
+			"Shows the number of emails sent in Mautic (AUTO_INCREMENT value)",
+			nil, nil,
+		),
 		numLeadsMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "leads_total"),
 			"Shows the number of leads in Mautic",
 			nil, nil,
@@ -128,6 +133,7 @@ func newMauticCollector(host string, dbname string, username string, pass string
 func (collector *mauticCollector) Describe(ch chan<- *prometheus.Desc) {
 
 	//We set the metrics
+	ch <- collector.numEmailsSentMetric
 	ch <- collector.numLeadsMetric
 	ch <- collector.numAnonymousMetric
 	ch <- collector.numEmailsMetric
@@ -156,6 +162,10 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 		os.Exit(1)
 	}
 	defer db.Close()
+
+	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "email_stats";
+	queryNumEmailsSentMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %semail_stats;", collector.dbName, collector.dbTablePrefix)
+	mtQueryCounter(db, ch, collector.numEmailsSentMetric, queryNumEmailsSentMetric)
 
 	//select count(id) as numLeads from leads where date_identified is not null
 	queryNumLeadsMetric := fmt.Sprintf("select count(id) as numLeads from %sleads where date_identified is not null;", collector.dbTablePrefix)
