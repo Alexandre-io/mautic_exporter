@@ -22,21 +22,23 @@ const (
 
 //This is my collector metrics
 type mauticCollector struct {
-	numEmailsSentMetric      *prometheus.Desc
-	numLeadsMetric           *prometheus.Desc
-	numAnonymousMetric       *prometheus.Desc
-	numEmailsMetric          *prometheus.Desc
-	numCampaignsMetric       *prometheus.Desc
-	numSegmentsMetric        *prometheus.Desc
-	numPageHitsMetric        *prometheus.Desc
-	numWebhookQueueMetric    *prometheus.Desc
-	numMessageQueueMetric    *prometheus.GaugeVec
-	numLeadEventFailedMetric *prometheus.Desc
-	numCampaignEventsMetric  *prometheus.GaugeVec
-	numNotificationsMetric   *prometheus.Desc
-	numPageRedirectMetric    *prometheus.Desc
-	numLeadsinCampaignMetric *prometheus.GaugeVec
-	numLeadsinSegmentMetric  *prometheus.GaugeVec
+	numEmailsSentMetric        *prometheus.Desc
+	numLeadsMetric             *prometheus.Desc
+	numAnonymousMetric         *prometheus.Desc
+	numEmailsMetric            *prometheus.Desc
+	numCampaignsMetric         *prometheus.Desc
+	numSegmentsMetric          *prometheus.Desc
+	numPageHitsMetric          *prometheus.Desc
+	numWebhookQueueMetric      *prometheus.Desc
+	numMessageQueueMetric      *prometheus.GaugeVec
+	numLeadEventFailedMetric   *prometheus.Desc
+	numCampaignEventsMetric    *prometheus.GaugeVec
+	numNotificationsMetric     *prometheus.Desc
+	numPageRedirectMetric      *prometheus.Desc
+	numLeadsinCampaignMetric   *prometheus.GaugeVec
+	numLeadsinSegmentMetric    *prometheus.GaugeVec
+	numChannelEmailSentMetric  *prometheus.GaugeVec
+	numChannelEmailReadMetric  *prometheus.GaugeVec
 
 	dbHost        string
 	dbName        string
@@ -120,6 +122,20 @@ func newMauticCollector(host string, dbname string, username string, pass string
 		},
 			[]string{"type"},
 		),
+        numChannelEmailSentMetric: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+            Namespace: namespace,
+            Name:      "channel_email_sent_total",
+            Help:      "Shows the number of emails sent in each email channel",
+        },
+            []string{"type"},
+        ),
+        numChannelEmailReadMetric: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+            Namespace: namespace,
+            Name:      "channel_email_read_total",
+            Help:      "Shows the number of emails read in each email channel",
+        },
+            []string{"type"},
+        ),
 
 		dbHost:        host,
 		dbName:        dbname,
@@ -148,6 +164,8 @@ func (collector *mauticCollector) Describe(ch chan<- *prometheus.Desc) {
 	collector.numCampaignEventsMetric.Describe(ch)
 	collector.numLeadsinCampaignMetric.Describe(ch)
 	collector.numLeadsinSegmentMetric.Describe(ch)
+	collector.numChannelEmailSentMetric.Describe(ch)
+	collector.numChannelEmailReadMetric.Describe(ch)
 }
 
 //Collect method is required for a prometheus.Collector type
@@ -223,6 +241,11 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	queryNumLeadsinSegmentMetric := fmt.Sprintf("select leadlist_id as label, count(*) as value from %slead_lists_leads group by leadlist_id;", collector.dbTablePrefix)
 	mtQueryGaugeVec(db, ch, collector.numLeadsinSegmentMetric, queryNumLeadsinSegmentMetric)
 
+	queryNumChannelEmailSentMetric := fmt.Sprintf("select `id` as label, `sent_count` as value from `%semails` WHERE `is_published` = 1;", collector.dbTablePrefix)
+	mtQueryGaugeVec(db, ch, collector.numChannelEmailSentMetric, queryNumChannelEmailSentMetric)
+
+    queryNumChannelEmailReadMetric := fmt.Sprintf("select `id` as label, `read_count` as value from `%semails` WHERE `is_published` = 1;", collector.dbTablePrefix)
+    mtQueryGaugeVec(db, ch, collector.numChannelEmailReadMetric, queryNumChannelEmailReadMetric)
 }
 
 func mtQueryCounter(db *sql.DB, ch chan<- prometheus.Metric, desc *prometheus.Desc, mysqlRequest string) {
