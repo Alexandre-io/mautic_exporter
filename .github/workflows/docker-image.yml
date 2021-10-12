@@ -28,4 +28,4 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: alexandreio/mautic_exporter:${{ env.RELEASE_VERSION }}
+        tags: alexandreio/mautic_exporter:latest,alexandreio/mautic_exporter:${{ env.RELEASE_VERSION }}
