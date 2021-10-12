@@ -20,6 +20,7 @@ jobs:
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-      run: docker login -u $DOCKER_USER -p DOCKER_PASSWORD
+      run: |
+        echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USER} --password-stdin
     - name: Dockerhub Push
       run: docker push $DOCKER_USER/mautic_exporter:$(date +%s)
