@@ -15,7 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag mautic_exporter:$(date +%s)
+      run: |
+        TAG=$(echo "${BRANCH_NAME}" | sed -e "s/\//_/g")
+        docker build . --file Dockerfile --tag mautic_exporter:${TAG}
     - name: Dockerhub login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -23,4 +25,6 @@ jobs:
       run: |
         echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USER} --password-stdin
     - name: Dockerhub Push
-      run: docker push $DOCKER_USER/mautic_exporter:$(date +%s)
+      run: |
+        TAG=$(echo "${BRANCH_NAME}" | sed -e "s/\//_/g")
+        docker push ${DOCKER_USER}/mautic_exporter:${TAG}
