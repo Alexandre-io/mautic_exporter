@@ -2,9 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+      - '*.*.*'
 
 jobs:
 
@@ -14,10 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Extract git tag
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
     - name: Build the Docker image
       run: |
-        TAG=$(echo "${BRANCH_NAME}" | sed -e "s/\//_/g")
-        docker build . --file Dockerfile --tag mautic_exporter:${TAG}
+        docker build . --file Dockerfile --tag mautic_exporter:$RELEASE_VERSION
     - name: Dockerhub login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -26,5 +26,4 @@ jobs:
         echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USER} --password-stdin
     - name: Dockerhub Push
       run: |
-        TAG=$(echo "${BRANCH_NAME}" | sed -e "s/\//_/g")
-        docker push ${DOCKER_USER}/mautic_exporter:${TAG}
+        docker push ${DOCKER_USER}/mautic_exporter:$RELEASE_VERSION
