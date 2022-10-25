@@ -51,7 +51,7 @@ type mauticCollector struct {
 func newMauticCollector(host string, dbname string, username string, pass string, tablePrefix string) *mauticCollector {
 	return &mauticCollector{
 		numEmailsSentMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "emails_sent_total"),
-			"Shows the number of emails sent in Mautic (AUTO_INCREMENT value)",
+			"Shows the number of emails sent in Mautic (MAX value)",
 			nil, nil,
 		),
 		numLeadsMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "leads_total"),
@@ -75,7 +75,7 @@ func newMauticCollector(host string, dbname string, username string, pass string
 			nil, nil,
 		),
 		numPageHitsMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "page_hits_total"),
-			"Shows the number of page hits in Mautic (AUTO_INCREMENT value)",
+			"Shows the number of page hits in Mautic (MAX value)",
 			nil, nil,
 		),
 		numWebhookQueueMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "webhook_total"),
@@ -105,7 +105,7 @@ func newMauticCollector(host string, dbname string, username string, pass string
 			nil, nil,
 		),
 		numPageRedirectMetric: prometheus.NewDesc(prometheus.BuildFQName(namespace, "", "page_redirect_total"),
-			"Shows the number of page redirects in Mautic (AUTO_INCREMENT value)",
+			"Shows the number of page redirects in Mautic (MAX value)",
 			nil, nil,
 		),
 		numLeadsinCampaignMetric: prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -181,8 +181,8 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 	defer db.Close()
 
-	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "email_stats";
-	queryNumEmailsSentMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%semail_stats';", collector.dbName, collector.dbTablePrefix)
+	//select max(id) from email_stats 
+	queryNumEmailsSentMetric := fmt.Sprintf("select max(id) from %semail_stats;", collector.dbTablePrefix)
 	mtQueryCounter(db, ch, collector.numEmailsSentMetric, queryNumEmailsSentMetric)
 
 	//select count(id) as numLeads from leads where date_identified is not null
@@ -205,8 +205,8 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	queryNumSegmentsMetric := fmt.Sprintf("select count(*) as numSegments from %slead_lists;", collector.dbTablePrefix)
 	mtQueryGauge(db, ch, collector.numSegmentsMetric, queryNumSegmentsMetric)
 
-	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "page_hits";
-	queryNumPageHitsMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%spage_hits';", collector.dbName, collector.dbTablePrefix)
+	//select max(id) from page_hits;
+	queryNumPageHitsMetric := fmt.Sprintf("select max(id) from %spage_hits;", collector.dbTablePrefix)
 	mtQueryCounter(db, ch, collector.numPageHitsMetric, queryNumPageHitsMetric)
 
 	//select count(*) as numWebhookQueue from webhook_queue;
@@ -229,8 +229,8 @@ func (collector *mauticCollector) Collect(ch chan<- prometheus.Metric) {
 	queryNumNotificationsMetric := fmt.Sprintf("select count(*) from %snotifications;", collector.dbTablePrefix)
 	mtQueryGauge(db, ch, collector.numNotificationsMetric, queryNumNotificationsMetric)
 
-	//SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = "mautic" AND TABLE_NAME = "page_redirects";
-	queryNumPageRedirectMetric := fmt.Sprintf("SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%spage_redirects';", collector.dbName, collector.dbTablePrefix)
+	//select max(id) from page_redirects;
+	queryNumPageRedirectMetric := fmt.Sprintf("select max(id) from %spage_redirects;", collector.dbTablePrefix)
 	mtQueryCounter(db, ch, collector.numPageRedirectMetric, queryNumPageRedirectMetric)
 
 	//select campaign_id as label, count(*) as value from campaign_leads where manually_removed = 0  group by campaign_id;
